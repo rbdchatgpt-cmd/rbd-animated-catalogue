@@ -1,0 +1,3 @@
+import ComparisonClient from "../../components/ComparisonClient";
+export const metadata={title:"Compare RBD Machinery",description:"Compare published reference specifications and available models across RBD agricultural equipment categories."};
+export default function Compare(){return <><section className="inner-hero"><div className="container"><div className="eyebrow">Make a confident choice</div><h1>Compare the<br/>right machines.</h1><p>Compare up to three RBD product families using verified reference information. Navigate between model options and detailed product pages.</p></div></section><section className="section-pad" style={{background:"#f5f4ed"}}><div className="container"><ComparisonClient/></div></section></>}
