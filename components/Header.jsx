@@ -15,7 +15,7 @@ export default function Header(){
   }catch(e){setSound(false)}
  }
  return <><header className="site-header">
-  <Link href="/" className="site-logo" aria-label="RBD Machine Tools Home"><span className="logo-frame"><img src={logo} alt="RBD logo extracted from the original catalogue"/></span><span className="site-logo-text">RBD Machine Tools<br/>Powering Indian Farmers</span></Link>
+  <Link href="/" className="site-logo" aria-label="RBD Machine Tools Home"><span className="logo-frame" role="img" aria-label="Original RBD Trust of India logo from the supplied catalogue"/><span className="site-logo-text">RBD Machine Tools<br/>Powering Indian Farmers</span></Link>
   <nav className="nav-links" aria-label="Primary navigation">{links.map(([name,href])=><Link key={href} href={href}>{name}</Link>)}</nav>
   <div className="head-actions"><button type="button" onClick={toggleSound} className="sound-btn" aria-pressed={sound} title="Toggle optional synthesized ambient audio">{sound?<Volume2 size={14} style={{verticalAlign:"middle"}}/>:<VolumeX size={14} style={{verticalAlign:"middle"}}/>} <span>{sound?"Sound on":"Sound off"}</span></button><button className="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded={open} onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button></div>
  </header><div className={"nav-drawer"+(open?" open":"")} aria-label="Mobile navigation">{links.map(([name,href])=><Link key={href} href={href} onClick={()=>setOpen(false)}>{name}</Link>)}</div></>;
