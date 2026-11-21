@@ -17,12 +17,12 @@ app.use("/api/enquiries",rateLimit({windowMs:60*60*1000,limit:10,standardHeaders
 const schema=z.object({
  name:z.string().trim().min(2).max(80),
  mobile:z.string().regex(/^[6-9]\d{9}$/,"Valid 10-digit Indian mobile number required"),
- state:z.string().trim().min(2).max(60),
+ state:z.string().trim().max(60).optional().default(""),
  city:z.string().trim().min(2).max(70),
  product:z.string().trim().min(2).max(100),
  model:z.string().trim().max(100).default(""),
  message:z.string().trim().max(1000).default(""),
- enquiryType:z.enum(["callback","dealer","bulk","general"]),
+ enquiryType:z.enum(["quote","callback","dealer","bulk","general"]),
  consent:z.literal(true),
  website:z.string().max(0).optional(),
  submittedAt:z.string().optional()
@@ -47,7 +47,7 @@ app.post("/api/enquiries",async(req,res)=>{
  const d=parsed.data;
  try{
  const q=await pool.query("INSERT INTO rbd_enquiries(name,mobile,state,city,product,model,message,enquiry_type,consent) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id",[
- d.name,d.mobile,d.state,d.city,d.product,d.model,d.message,d.enquiryType,d.consent]);
+ d.name,d.mobile,d.state||"",d.city,d.product,d.model,d.message,d.enquiryType,d.consent]);
  res.status(201).json({ok:true,reference:"RBD-"+String(q.rows[0].id).padStart(6,"0"),message:"Enquiry securely saved"});
  }catch(e){console.error("Enquiry save failure",e.code||e.name);res.status(503).json({ok:false,error:"Could not save your enquiry. Please try WhatsApp instead."})}
 });
