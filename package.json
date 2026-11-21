@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "build": "npm run media:sync && next build && npm run test:static",
+    "start": "next start",
+    "media:sync": "node scripts/sync-official-images.mjs",
+    "test:static": "node scripts/test-static.mjs"
   },
   "dependencies": {
     "next": "^15.5.0",
