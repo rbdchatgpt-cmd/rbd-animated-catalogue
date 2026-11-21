@@ -1,17 +1,23 @@
 "use client";
-import {products,mediaBase} from "../lib/products";
-import {useState} from "react";
-const samples=[
-["power-reaper","Harvesting wheat","Scene awaiting original RBD harvesting footage"],
-["power-weeder","Inter-row cultivation","Scene awaiting original RBD field video"],
-["brush-cutter","Grass clearance","Scene awaiting original RBD working video"],
-["earth-auger","Planting holes","Scene awaiting original RBD earth drilling footage"],
-["chaff-cutter","Fodder preparation","Scene awaiting original RBD chaff processing footage"],
-["chainsaw","Wood cutting","Scene awaiting original RBD chainsaw footage"],
-["lawn-mower","Green lawn care","Scene awaiting original RBD mower footage"],
-["battery-sprayer","Crop application","Scene awaiting original RBD spray footage"]
+import Link from "next/link";
+import {products} from "../lib/products";
+import {productAssets} from "../lib/media";
+import CinematicMedia from "./CinematicMedia";
+const scenes=[
+ {slug:"power-reaper",title:"Golden wheat harvest",detail:"Follow the reaper through a wheat field.",theme:"harvest"},
+ {slug:"power-weeder",title:"Crop-row cultivation",detail:"Cultivating and loosening soil between rows.",theme:"cultivation"},
+ {slug:"brush-cutter",title:"Grass and vegetation care",detail:"Managing green vegetation and field borders.",theme:"grass"},
+ {slug:"chaff-cutter",title:"Fodder processing",detail:"Green fodder feeding into the cutter and collecting the output.",theme:"fodder"},
+ {slug:"earth-auger",title:"Plantation preparation",detail:"Drilling a planting hole in agricultural soil.",theme:"soil"},
+ {slug:"chainsaw",title:"Wood cutting",detail:"Carefully controlled wood-cutting demonstrations.",theme:"wood"},
+ {slug:"lawn-mower",title:"Lawn maintenance",detail:"Even mowing across a green lawn.",theme:"lawn"},
+ {slug:"battery-sprayer",title:"Crop spraying",detail:"Application across crops using the actual RBD sprayer.",theme:"spray"}
 ];
 export default function WorkScene(){
- return <section className="work-section"><div className="container"><div className="eyebrow dark">Field applications</div><h2 className="section-heading">The work behind the machines.</h2><p className="muted" style={{maxWidth:660,marginBottom:38}}>Product-specific footage will play here once approved RBD field clips are uploaded. These illustrations use actual product photography with a stylised field background and are not real operation footage.</p>
- <div className="work-cards">{samples.map(([slug,title,note])=>{let p=products.find(x=>x.slug===slug);return <article className="work-card" key={slug}><div className="work-illustration"><span className="sky"/><span className="field"/>{p?.image&&<img src={p.image} alt={"RBD "+p.name+" product image"} loading="lazy"/>}</div><h3>{title}</h3><p>{p?.name}</p><div className="work-label">{note}</div></article>})}</div></div></section>;
+return <section className="work-section" id="field-applications"><div className="container"><div className="eyebrow dark">Field applications</div><h2 className="section-heading">Every machine.<br/>Its own environment.</h2><p className="muted" style={{maxWidth:800,marginBottom:35}}>The environments below are stylised visual chapters, not simulated footage of a machine operating. Each chapter is ready for its own approved RBD work video; only footage supplied by RBD will appear as actual operation.</p>
+<div className="work-cards">{scenes.map((scene,i)=>{const p=products.find(x=>x.slug===scene.slug);const video=productAssets(scene.slug).video;return <article className="work-card cinematic-field-card" key={scene.slug}>
+ <div className={"field-scene-preview theme-"+scene.theme}>
+ {video?<CinematicMedia src={video} poster={p.image} title={p.name+" field work"} description="Original machine demonstration" autoplay/>:<><div className="field-sky"/><div className="field-floor"/><div className="field-stage-number">{String(i+1).padStart(2,"0")}</div>{p.image&&<img src={p.image} alt={"Authentic RBD "+p.name+" product photograph, concept backdrop only"} loading="lazy"/>}<span className="field-scene-caption">CONCEPT / FIELD FOOTAGE PENDING</span></>}
+ </div><div className="work-card-content"><span className="eyebrow dark" style={{fontSize:9}}>0{i+1} · {p.name}</span><h3>{scene.title}</h3><p>{scene.detail}</p><Link href={"/products/"+scene.slug+"/"} className="work-details">Explore the machine ↗</Link></div>
+ </article>})}</div></div></section>;
 }
