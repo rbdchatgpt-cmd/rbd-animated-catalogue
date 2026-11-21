@@ -1,22 +1,23 @@
 "use client";
 import Link from "next/link";
-import {useState,useRef,useEffect} from "react";
-import {Menu,X,Volume2,VolumeX} from "lucide-react";
-const logo="https://raw.githubusercontent.com/rbdchatgpt-cmd/rbd-animated-catalogue/main/logo-crop.png";
-const links=[["Products","/products/"],["Our Journey","/story/"],["Dealers","/network/"],["Support","/service/"],["Contact","/contact/"]];
+import {useEffect,useRef,useState,useMemo} from "react";
+import {Search,Menu,X,Volume2,VolumeX,ChevronDown,ArrowUpRight,GitCompareArrows} from "lucide-react";
+import {products} from "../lib/products";
+const pages=[["Home","/"],["Products","/products/"],["Our Journey","/story/"],["About RBD","/about/"],["Dealers","/network/"],["Support","/service/"],["Contact","/contact/"]];
 export default function Header(){
- const[open,setOpen]=useState(false),[sound,setSound]=useState(false);const audio=useRef(null);
- useEffect(()=>()=>{if(audio.current){audio.current.close().catch(()=>{})}},[]);
- async function toggleSound(){
-  try{
-   if(!audio.current){const C=window.AudioContext||window.webkitAudioContext;const a=new C();const osc=a.createOscillator(),gain=a.createGain(),filter=a.createBiquadFilter();osc.type="sine";osc.frequency.value=62;filter.type="lowpass";filter.frequency.value=115;gain.gain.value=.012;osc.connect(filter);filter.connect(gain);gain.connect(a.destination);osc.start();audio.current=a;}
-   if(sound){await audio.current.suspend();setSound(false)}
-   else{await audio.current.resume();setSound(true)}
-  }catch(e){setSound(false)}
- }
- return <><header className="site-header">
-  <Link href="/" className="site-logo" aria-label="RBD Machine Tools Home"><span className="logo-frame" role="img" aria-label="Original RBD Trust of India logo from the supplied catalogue"/><span className="site-logo-text">RBD Machine Tools<br/>Powering Indian Farmers</span></Link>
-  <nav className="nav-links" aria-label="Primary navigation">{links.map(([name,href])=><Link key={href} href={href}>{name}</Link>)}</nav>
-  <div className="head-actions"><button type="button" onClick={toggleSound} className="sound-btn" aria-pressed={sound} title="Toggle optional synthesized ambient audio">{sound?<Volume2 size={14} style={{verticalAlign:"middle"}}/>:<VolumeX size={14} style={{verticalAlign:"middle"}}/>} <span>{sound?"Sound on":"Sound off"}</span></button><button className="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded={open} onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button></div>
- </header><div className={"nav-drawer"+(open?" open":"")} aria-label="Mobile navigation">{links.map(([name,href])=><Link key={href} href={href} onClick={()=>setOpen(false)}>{name}</Link>)}</div></>;
+ const[open,setOpen]=useState(false),[mega,setMega]=useState(false),[searchOpen,setSearchOpen]=useState(false),[query,setQuery]=useState(""),[sound,setSound]=useState(false);
+ const audio=useRef(null),input=useRef(null);const results=useMemo(()=>products.filter(p=>(p.name+" "+p.models.join(" ")+" "+p.chapter+" "+p.applications.join(" ")).toLowerCase().includes(query.trim().toLowerCase())).slice(0,14),[query]);
+ useEffect(()=>()=>{audio.current?.close?.().catch(()=>{})},[]);
+ useEffect(()=>{if(searchOpen)input.current?.focus()},[searchOpen]);
+ useEffect(()=>{const f=e=>{if(e.key==="Escape"){setSearchOpen(false);setMega(false);setOpen(false)}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();setSearchOpen(a=>!a)}};window.addEventListener("keydown",f);return()=>window.removeEventListener("keydown",f)},[]);
+ async function toggleSound(){try{if(!audio.current){const a=new(window.AudioContext||window.webkitAudioContext)(),osc=a.createOscillator(),gain=a.createGain(),filter=a.createBiquadFilter();osc.type="sine";osc.frequency.value=64;filter.type="lowpass";filter.frequency.value=110;gain.gain.value=.01;osc.connect(filter);filter.connect(gain);gain.connect(a.destination);osc.start();audio.current=a}await(sound?audio.current.suspend():audio.current.resume());setSound(!sound)}catch(e){setSound(false)}}
+ const close=()=>{setOpen(false);setMega(false);setSearchOpen(false)};
+ return <>
+ <header className="site-header"><Link href="/" className="site-logo" onClick={close} aria-label="RBD Machine Tools home"><span className="logo-frame" role="img" aria-label="Original RBD logo"/><span className="site-logo-text">RBD Machine Tools<br/>Powering Indian Farmers</span></Link>
+ <nav className="nav-links" aria-label="Site navigation">{pages.map(([title,href])=>title==="Products"?<button key={title} className="mega-trigger" type="button" aria-expanded={mega} onClick={()=>{setMega(!mega);setSearchOpen(false)}}>Products <ChevronDown size={13}/></button>:<Link key={title} href={href} onClick={close}>{title}</Link>)}</nav>
+ <div className="head-actions"><button className="nav-icon" title="Search products and models (Ctrl+K)" aria-label="Search products" type="button" onClick={()=>{setSearchOpen(a=>!a);setMega(false)}}><Search size={18}/></button><Link className="nav-icon" title="Compare machinery" href="/compare/" onClick={close}><GitCompareArrows size={18}/></Link><button onClick={toggleSound} className="sound-btn" type="button" aria-pressed={sound} aria-label={sound?"Mute ambient sound":"Enable ambient sound"}>{sound?<Volume2 size={14}/>:<VolumeX size={14}/>}<span className="sound-label">{sound?"Sound on":"Sound off"}</span></button><button type="button" className="mobile-menu-toggle" onClick={()=>setOpen(!open)} aria-label="Toggle navigation" aria-expanded={open}>{open?<X/>:<Menu/>}</button></div></header>
+ {mega&&<div className="mega-menu" role="region" aria-label="All RBD products"><div className="mega-top"><div><span className="eyebrow">Complete RBD range</span><h2>Choose your next machine.</h2></div><Link href="/products/" className="mega-all" onClick={close}>View all 14 products <ArrowUpRight size={16}/></Link></div><div className="mega-grid">{products.map((p,i)=><Link href={"/products/"+p.slug+"/"} key={p.slug} onClick={close} className="mega-item"><span>{String(i+1).padStart(2,"0")}</span><b>{p.name}</b><ArrowUpRight size={15}/></Link>)}</div></div>}
+ {open&&<div className="nav-drawer open" aria-label="Mobile navigation">{pages.map(([name,href])=><Link onClick={close} key={href} href={href}>{name}</Link>)}<Link href="/compare/" onClick={close}>Compare Products</Link></div>}
+ {searchOpen&&<div className="search-overlay" role="dialog" aria-modal="true" aria-label="Search RBD products"><div className="search-panel"><div className="search-top"><h2>Search RBD machinery</h2><button type="button" aria-label="Close search" onClick={close}><X/></button></div><label htmlFor="machine-search" className="search-label">Search products, models or applications</label><div className="search-input-wrap"><Search size={18}/><input id="machine-search" ref={input} value={query} onChange={e=>setQuery(e.target.value)} placeholder="e.g. 7 HP, reaper, weeding, sprayer" autoComplete="off"/></div><div className="search-results"><span className="search-count">{results.length} matching categories</span>{results.map(p=><Link href={"/products/"+p.slug+"/"} key={p.slug} className="search-result" onClick={close}><div><b>{p.name}</b><small>{p.models.slice(0,2).join(" · ")}</small></div><ArrowUpRight size={17}/></Link>)}{!results.length&&<p>No exact match. Try another model or category name.</p>}</div><div className="search-bottom">Press Esc to close · Ctrl/⌘ + K to search</div></div></div>}
+ </>;
 }
