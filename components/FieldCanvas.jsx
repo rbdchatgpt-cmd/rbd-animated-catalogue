@@ -1,6 +1,6 @@
 "use client";
 import {Canvas,useFrame} from "@react-three/fiber";
-import {useMemo,useRef} from "react";
+import {useEffect,useMemo,useRef,useState} from "react";
 import * as THREE from "three";
 
 function Crops(){
@@ -28,5 +28,10 @@ function Farm(){
  return <><color attach="background" args={["#638d79"]}/><fog attach="fog" args={["#638d79",5,25]}/><ambientLight intensity={1.6}/><directionalLight position={[-4,8,5]} intensity={3} color="#ffe2a1"/><mesh rotation={[-Math.PI/2,0,0]} position={[0,-.1,0]}><planeGeometry args={[35,35]}/><meshStandardMaterial color="#2b5434" roughness={.92}/></mesh><group ref={rows}><Crops/></group></>;
 }
 export default function FieldCanvas(){
- return <div className="catalogue-field-canvas" aria-hidden="true"><Canvas dpr={[1,1.25]} camera={{position:[0,3.8,7.8],fov:48}} gl={{antialias:false,powerPreference:"low-power"}}><Farm/></Canvas></div>;
+ const [lightweight,setLightweight]=useState(true);
+ useEffect(()=>{
+ const update=()=>setLightweight(window.matchMedia("(max-width: 760px), (prefers-reduced-motion: reduce)").matches);
+ update();window.addEventListener("resize",update,{passive:true});return()=>window.removeEventListener("resize",update);
+ },[]);
+ return <div className="catalogue-field-canvas" aria-hidden="true">{lightweight?<div className="catalogue-field-mobile"><span className="catalogue-mobile-sun"/><span className="catalogue-mobile-farm"/><span className="catalogue-mobile-farm far"/></div>:<Canvas dpr={[1,1.25]} camera={{position:[0,3.8,7.8],fov:48}} gl={{antialias:false,powerPreference:"low-power"}}><Farm/></Canvas>}</div>;
 }
