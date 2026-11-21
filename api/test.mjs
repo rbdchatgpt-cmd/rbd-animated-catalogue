@@ -8,7 +8,7 @@ async function run(){
  const health=await ready();if(!health.ok||health.databaseConnected!==false)throw Error("Health status inconsistent");
  const opts={method:"POST",headers:{"Content-Type":"application/json","Origin":"http://example.test"}};
  let r=await fetch(base+"/api/enquiries",{...opts,body:JSON.stringify({name:"X"})});if(r.status!==400)throw Error("Invalid enquiry must return HTTP 400");
- const valid={name:"Test Buyer",mobile:"9999999999",state:"Rajasthan",city:"Jaipur",product:"Power Reaper",model:"10 HP",message:"Test only",enquiryType:"callback",consent:true,website:""};
+ const valid={name:"Test Buyer",mobile:"9999999999",city:"Jaipur",product:"Power Reaper",model:"10 HP",message:"Test only",enquiryType:"quote",consent:true,website:""};
  r=await fetch(base+"/api/enquiries",{...opts,body:JSON.stringify(valid)});if(r.status!==503)throw Error("Unconfigured database must return HTTP 503, got "+r.status);
  const response=await r.json();if(response.ok!==false)throw Error("Cannot claim success without DB");
  r=await fetch(base+"/api/enquiries",{...opts,headers:{...opts.headers,Origin:"http://untrusted.example"},body:JSON.stringify(valid)});if(r.status<400)throw Error("Untrusted origin must be blocked");
