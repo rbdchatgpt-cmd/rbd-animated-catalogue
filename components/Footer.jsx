@@ -1,8 +1,2 @@
 import Link from "next/link";
-export default function Footer(){
-return <footer className="site-footer"><div className="container"><div className="footer-grid">
-<div><div className="footer-brand">RBD Machine Tools Pvt. Ltd.</div><p>POWERING INDIAN FARMERS.</p><p>Jaipur, Rajasthan, India<br/>+91 9694949030 · info@rbdmachine.com</p></div>
-<div><h4>Explore</h4><p><Link href="/products/">Machines</Link><br/><Link href="/story/">Our Story</Link><br/><Link href="/network/">Dealer Network</Link></p></div>
-<div><h4>Support</h4><p><Link href="/contact/">Enquiry</Link><br/><Link href="/service/">After-Sales Support</Link><br/><a href="https://www.rbdmachine.com" target="_blank" rel="noopener">Original RBD Store</a></p></div>
-</div><div className="footer-bottom">© RBD Machine Tools Pvt. Ltd. · This digital experience uses original RBD catalogue/product references. 3D assets and working video marked pending where not supplied.</div></div></footer>
-}
+export default function Footer(){return <footer className="catalogue-footer"><div className="container"><div className="catalogue-footer-top"><div><span className="eyebrow">RBD MACHINE TOOLS</span><h2>THE NEXT MACHINE<br/>IS YOURS TO EXPLORE.</h2></div><div className="catalogue-footer-actions"><Link href="/products/" className="btn btn-gold">EXPLORE PRODUCTS ↗</Link><a className="btn btn-outline" href="/RBD-Catalogue-Web.pdf" download>DOWNLOAD CATALOGUE ↓</a></div></div><div className="catalogue-footer-bottom"><span>RBD MACHINE TOOLS PVT. LTD. · PRODUCT COLLECTION 2026—27</span><span>POWERING INDIAN FARMERS.</span><span>+91 9694949030</span></div></div></footer>}
