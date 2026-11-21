@@ -39,3 +39,4 @@ export default function EnquiryForm({product="",model=""}){
  <p className="note" style={{marginTop:14}}>A callback is confirmed only when the secure API returns an enquiry reference. WhatsApp enquiries are sent only after you press Send in WhatsApp.</p>
  {status&&<p role="status" className={status.ok?"form-success":"notice"} style={{marginTop:16}}>{status.text}</p>}
  </form>;
+}
