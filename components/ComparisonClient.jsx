@@ -1,0 +1,14 @@
+"use client";
+import {useMemo,useState} from "react";import Link from "next/link";import {products} from "../lib/products";
+const fields=["Reference model","Reference power","Engine","Rated power","Start","Operation","Engine options","Use","Applications","Engine options","Model","Type","Capacity options","Reference model"];
+export default function ComparisonClient(){
+ const[chosen,setChosen]=useState(["power-reaper","power-weeder"]);const [query,setQuery]=useState("");
+ const available=products.filter(p=>(p.name+" "+p.models.join(" ")).toLowerCase().includes(query.toLowerCase()));
+ const selected=chosen.map(slug=>products.find(p=>p.slug===slug)).filter(Boolean);
+ function toggle(slug){setChosen(prev=>prev.includes(slug)?prev.filter(s=>s!==slug):prev.length>=3?prev:[...prev,slug])}
+ const specKeys=useMemo(()=>Array.from(new Set(selected.flatMap(p=>p.specs.map(([k])=>k)))),[chosen.join(",")]);
+ return <><div className="compare-picker"><label htmlFor="compare-search">Find products or models</label><input id="compare-search" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search machines to compare…"/><p className="note">Choose up to three product categories. This is a category-level comparison using published reference specifications, not a comparison of every model.</p><div className="compare-pills">{available.map(p=><button type="button" key={p.slug} className={chosen.includes(p.slug)?"selected":""} onClick={()=>toggle(p.slug)} aria-pressed={chosen.includes(p.slug)}>{chosen.includes(p.slug)?"✓ ":"+ "}{p.name}</button>)}</div></div>
+ <div className="comparison-scroll" role="region" aria-label="Product specification comparison" tabIndex={0}><table className="comparison-table"><thead><tr><th scope="col">REFERENCE ATTRIBUTE</th>{selected.map(p=><th scope="col" key={p.slug}>{p.image&&<img src={p.image} alt="" loading="lazy"/>}<strong>{p.name}</strong><span>{p.models[0]}</span><Link href={"/products/"+p.slug+"/"}>Product page ↗</Link></th>)}</tr></thead><tbody><tr><th scope="row">Available models</th>{selected.map(p=><td key={p.slug}>{p.models.join(" / ")}</td>)}</tr>{specKeys.map(k=><tr key={k}><th scope="row">{k}</th>{selected.map(p=><td key={p.slug}>{p.specs.find(([key])=>key===k)?.[1] || "Not specified for this reference"}</td>)}</tr>)}<tr><th scope="row">Main applications</th>{selected.map(p=><td key={p.slug}>{p.applications.join(" • ")}</td>)}</tr><tr><th scope="row">Specifications source</th>{selected.map(p=><td key={p.slug}>{p.source}</td>)}</tr></tbody></table></div>
+ <p className="notice" style={{marginTop:22}}>Technical values are published reference specifications. Different model variants can use different engines, transmissions and accessories. Request a model-specific quote and data sheet before comparing commercially.</p>
+ </>;
+}
