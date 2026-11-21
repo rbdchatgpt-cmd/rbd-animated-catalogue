@@ -12,6 +12,7 @@ const groups={
  "manual-seeder":"Cultivation","chowkidar-torch":"Farm utility"
 };
 const filters=["All products","Harvesting","Cultivation","Cutting","Crop care","Farm utility"];
+function ProductPhoto({product}){const [failed,setFailed]=useState(false);return product.image&&!failed?<img src={product.image} alt={"Genuine RBD "+product.name+" machinery photograph"} loading="lazy" onError={()=>setFailed(true)}/>:<div className="catalogue-card-pending"><span>ORIGINAL RBD MACHINE IMAGE</span><strong>PHOTO PENDING</strong></div>}
 export default function CatalogueGrid({compact=false}){
  const [filter,setFilter]=useState("All products"),[search,setSearch]=useState("");
  const root=useRef(null);
@@ -23,7 +24,7 @@ export default function CatalogueGrid({compact=false}){
  <div className="catalogue-count">{String(found.length).padStart(2,"0")} PRODUCT FAMILIES</div>
  <div className="catalogue-product-grid">{found.map((p,i)=><Link href={"/products/"+p.slug+"/"} className="catalogue-product-card" key={p.slug} aria-label={"Explore "+p.name}>
  <div className="catalogue-card-top"><span>{p.chapter}</span><ArrowUpRight size={21}/></div>
- <div className="catalogue-card-image">{p.image?<img src={p.image} alt={"Genuine RBD "+p.name+" product"} loading="lazy"/>:<div className="catalogue-card-pending"><span>RBD ORIGINAL IMAGE</span><strong>PENDING</strong></div>}</div>
+ <div className="catalogue-card-image"><ProductPhoto product={p}/></div>
  <div className="catalogue-card-bottom"><span>{groups[p.slug]||"Agricultural equipment"}</span><h3>{p.name}</h3><div className="catalogue-card-link">VIEW PRODUCT <ArrowUpRight size={15}/></div></div></Link>)}</div>
  {!found.length&&<div className="catalogue-empty">No products match this search. Try another category or model name.</div>}
  {!compact&&<div className="catalogue-compare-prompt"><span>Choosing between machines?</span><Link href="/compare/">COMPARE PRODUCTS <ArrowUpRight size={17}/></Link></div>}
