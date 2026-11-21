@@ -32,7 +32,15 @@ for(const [slug,productPath] of Object.entries(targets)){
  if(!page.ok)throw Error("page HTTP "+page.status);
  const html=await page.text();
  let image=extractTag(html,"og:image")||extractTag(html,"twitter:image");
- if(!image)throw Error("verified product meta image absent");
+ if(!image){
+  const images=[...html.matchAll(/<img\\b[^>]*>/gi)].map(m=>{const tag=m[0],src=tag.match(/(?:src|data-src|data-original|data-zoom-image)=[\\x22\\x27]([^\\x22\\x27]+)[\\x22\\x27]/i)?.[1],alt=tag.match(/alt=[\\x22\\x27]([^\\x22\\x27]*)[\\x22\\x27]/i)?.[1]||"";return {src,alt,tag:tag.slice(0,230)}}).filter(x=>x.src&&x.src.includes("/img/"));
+  const hints=slug.replaceAll("-"," ").split(" ").filter(x=>x.length>3);
+  const rank=x=>hints.reduce((a,w)=>a+(x.alt.toLowerCase().includes(w)?3:0),0)+(x.tag.includes("product")?1:0);
+  images.sort((a,b)=>rank(b)-rank(a));
+  console.log("[RBD asset scan]",slug,"candidates",images.length,"sample",JSON.stringify(images.slice(0,3).map(x=>({src:x.src,alt:x.alt}))));
+  image=images[0]?.src;
+ }
+ if(!image)throw Error("no RBD-hosted product image found in page");
  const u=new URL(image,origin);if(!["www.rbdmachine.com","rbdmachine.com"].includes(u.hostname))throw Error("image not hosted by RBD");
  if(!u.pathname.includes("/img/"))throw Error("image path is not a product image");
  const res=await fetchSafe(u.toString(),15000);
