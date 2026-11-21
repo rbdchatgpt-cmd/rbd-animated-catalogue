@@ -1,27 +1,21 @@
 "use client";
 import Link from "next/link";
 import {useEffect,useMemo,useRef,useState} from "react";
-import {Menu,X,Search,ArrowUpRight,GitCompareArrows} from "lucide-react";
+import {Search,Menu,X,ChevronDown,ArrowUpRight,GitCompareArrows} from "lucide-react";
 import {products} from "../lib/products";
-
 export default function Header(){
- const [menu,setMenu]=useState(false),[search,setSearch]=useState(false),[q,setQ]=useState("");
+ const [open,setOpen]=useState(false),[mega,setMega]=useState(false),[searchOpen,setSearchOpen]=useState(false),[query,setQuery]=useState("");
  const input=useRef(null);
- const found=useMemo(()=>products.filter(p=>(p.name+" "+p.models.join(" ")+" "+p.applications.join(" ")).toLowerCase().includes(q.trim().toLowerCase())),[q]);
- useEffect(()=>{if(search)input.current?.focus()},[search]);
- useEffect(()=>{const handle=e=>{if(e.key==="Escape"){setSearch(false);setMenu(false)}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();setSearch(v=>!v)}};window.addEventListener("keydown",handle);return()=>window.removeEventListener("keydown",handle)},[]);
- const close=()=>{setMenu(false);setSearch(false)};
+ const results=useMemo(()=>products.filter(p=>(p.name+" "+p.models.join(" ")+" "+p.applications.join(" ")).toLowerCase().includes(query.trim().toLowerCase())),[query]);
+ const close=()=>{setOpen(false);setMega(false);setSearchOpen(false)};
+ useEffect(()=>{if(searchOpen)input.current?.focus()},[searchOpen]);
+ useEffect(()=>{const key=e=>{if(e.key==="Escape"){close()}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();setSearchOpen(v=>!v);setMega(false)}};window.addEventListener("keydown",key);return()=>window.removeEventListener("keydown",key)},[]);
  return <>
- <header className="site-header catalogue-header">
- <Link href="/" onClick={close} className="site-logo" aria-label="RBD Product Collection home"><span className="logo-frame" role="img" aria-label="Original RBD logo from the supplied catalogue"/><span className="site-logo-text">PRODUCT COLLECTION<br/>2026—27</span></Link>
- <nav className="catalogue-nav" aria-label="Product catalogue navigation"><Link href="/#collection">PRODUCT COLLECTION</Link><Link href="/products/">ALL 14 MACHINES</Link><Link href="/compare/">COMPARE MODELS</Link></nav>
- <div className="catalogue-nav-actions"><button type="button" className="nav-icon" title="Search RBD products" aria-label="Search products" onClick={()=>setSearch(v=>!v)}><Search size={18}/></button><a className="pdf-top-link" href="/RBD-Catalogue-Web.pdf" download>PDF ↓</a><button className="mobile-menu-toggle" type="button" aria-label="Toggle product catalogue navigation" aria-expanded={menu} onClick={()=>setMenu(v=>!v)}>{menu?<X/>:<Menu/>}</button></div>
- </header>
- {menu&&<nav className="catalogue-drawer" aria-label="Mobile product navigation"><Link href="/#collection" onClick={close}>EXPLORE COLLECTION</Link><Link href="/products/" onClick={close}>ALL PRODUCTS</Link><Link href="/compare/" onClick={close}>COMPARE MODELS</Link><a href="/RBD-Catalogue-Web.pdf" download onClick={close}>DOWNLOAD PDF CATALOGUE</a></nav>}
- {search&&<div className="search-overlay" role="dialog" aria-modal="true" aria-label="Catalogue search"><div className="search-panel">
- <div className="search-top"><h2>Find your machine.</h2><button onClick={close} type="button" aria-label="Close search"><X/></button></div>
- <label htmlFor="catalogue-search" className="search-label">Product name, model or application</label><div className="search-input-wrap"><Search size={18}/><input ref={input} value={q} onChange={e=>setQ(e.target.value)} id="catalogue-search" placeholder="Search 7 HP, power reaper, spray…"/></div>
- <div className="search-results"><span className="search-count">{found.length} products in this collection</span>{found.map(p=><Link href={"/products/"+p.slug+"/"} onClick={close} className="search-result" key={p.slug}><div><b>{p.name}</b><small>{p.models.slice(0,3).join(" · ")}</small></div><ArrowUpRight size={16}/></Link>)}{!found.length&&<p>No products found. Try another model or category.</p>}</div><div className="search-bottom">ESC to close · Ctrl/⌘ + K to search</div>
- </div></div>}
+ <header className="site-header catalogue-header"><Link href="/" className="site-logo" onClick={close} aria-label="RBD Machine Tools product catalogue home"><span className="logo-frame" role="img" aria-label="RBD logo"/><span className="site-logo-text">PRODUCT COLLECTION<br/>2026–27</span></Link>
+ <nav className="nav-links" aria-label="Catalogue navigation"><Link href="/" onClick={close}>Catalogue cover</Link><button className="mega-trigger" type="button" aria-expanded={mega} onClick={()=>{setMega(v=>!v);setSearchOpen(false)}}>All products <ChevronDown size={14}/></button><Link href="/compare/" onClick={close}>Compare models</Link></nav>
+ <div className="head-actions"><button className="nav-icon" type="button" title="Search product catalogue (Ctrl+K)" aria-label="Search products" onClick={()=>{setSearchOpen(v=>!v);setMega(false)}}><Search size={19}/></button><Link className="nav-icon" href="/compare/" title="Compare machinery" onClick={close}><GitCompareArrows size={19}/></Link><Link className="catalogue-header-cta" href="/products/" onClick={close}>EXPLORE PRODUCTS <ArrowUpRight size={15}/></Link><button className="mobile-menu-toggle" type="button" aria-label="Toggle catalogue menu" aria-expanded={open} onClick={()=>setOpen(v=>!v)}>{open?<X size={24}/>:<Menu size={24}/>}</button></div></header>
+ {mega&&<div className="mega-menu" role="region" aria-label="All 14 RBD product categories"><div className="mega-top"><div><span className="eyebrow">Product collection 2026–27</span><h2>Select a machine.</h2></div><Link className="mega-all" href="/products/" onClick={close}>Browse catalogue <ArrowUpRight size={17}/></Link></div><div className="mega-grid">{products.map((p,i)=><Link key={p.slug} className="mega-item" href={"/products/"+p.slug+"/"} onClick={close}><span>{String(i+1).padStart(2,"0")}</span><b>{p.name}</b><ArrowUpRight size={15}/></Link>)}</div></div>}
+ {open&&<div className="nav-drawer open" aria-label="Mobile catalogue menu"><Link href="/" onClick={close}>Catalogue Cover</Link><Link href="/products/" onClick={close}>All 14 Products</Link><Link href="/compare/" onClick={close}>Compare Equipment</Link>{products.map(p=><Link key={p.slug} href={"/products/"+p.slug+"/"} onClick={close}>{p.name}</Link>)}</div>}
+ {searchOpen&&<div className="search-overlay" role="dialog" aria-modal="true" aria-label="Search RBD products"><div className="search-panel"><div className="search-top"><h2>Find your RBD machine</h2><button type="button" aria-label="Close search" onClick={close}><X/></button></div><label htmlFor="machine-search" className="search-label">Search category, model, HP or application</label><div className="search-input-wrap"><Search size={18}/><input id="machine-search" ref={input} value={query} onChange={e=>setQuery(e.target.value)} placeholder="e.g. power reaper, 7 HP, sprayer" autoComplete="off"/></div><div className="search-results"><span className="search-count">{results.length} matching product families</span>{results.map(p=><Link href={"/products/"+p.slug+"/"} key={p.slug} className="search-result" onClick={close}><div><b>{p.name}</b><small>{p.models.slice(0,2).join(" · ")}</small></div><ArrowUpRight size={17}/></Link>)}{!results.length&&<p>No matches. Try another name or model.</p>}</div><div className="search-bottom">Esc to close · Ctrl/⌘ + K to search</div></div></div>}
  </>;
 }

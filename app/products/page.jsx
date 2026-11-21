@@ -1,3 +1,3 @@
-import CatalogueExperience from "../../components/CatalogueExperience";
-export const metadata={title:"All RBD Products | 2026–27 Catalogue",description:"Explore the complete RBD Machine Tools product collection: Power Reapers, Weeders, Brush Cutters, Chaff Cutters, Augers and more."};
-export default function ProductCollection(){return <CatalogueExperience collectionOnly/>}
+import CatalogueGrid from "../../components/CatalogueGrid";
+export const metadata={title:"All RBD Products | Collection 2026–27",description:"Browse all 14 RBD machine categories. Compare authentic machinery models and enquire about your selected product."};
+export default function Products(){return <><section className="catalogue-list-cover"><div className="container"><div className="catalogue-kicker">2026–27 / PRODUCT INDEX</div><h1>Every machine.<br/><em>One collection.</em></h1><p>Explore all fourteen RBD product families, their models, authentic photos, features and applications.</p></div></section><CatalogueGrid compact/></>}
