@@ -1,65 +1,81 @@
-# RBD Field Cinema — Next.js Preview
+# RBD FIELD CINEMA — Implementation & Production Handoff
 
-A premium digital product-catalogue **preview**, deployed separately from www.rbdmachine.com and the original animated PDF site.
+**Website preview:** https://rbd-field-cinema-next.onrender.com/  
+**Frontend:** Next.js 15 static export, React 19, Framer Motion, GSAP, React Three Fiber / Drei.  
+**Existing PDF site retained:** https://rbd-animated-catalogue.onrender.com/  
+**Official company website unchanged:** https://www.rbdmachine.com
 
-## What's implemented
-- Next.js static export with React 19, React Three Fiber / Three.js demonstration plinth, GSAP scroll transitions, Framer Motion transitions.
-- Forest-green / premium-black / white / metallic-gold responsive UI.
-- RBD logo cropped from the supplied PDF cover (no logo redraw).
-- 14 product categories, individual SEO-friendly product routes and technical specifications grounded in the supplied catalogue and public RBD machine pages.
-- Product model chooser, component guide, photo gallery, 3D demonstration placeholder and media placeholder.
-- Company journey, verified 2020 establishment and 2025 Shark Tank India S4 appearance.
-- Enquiry form collecting name, phone, state, city, product, model, message and consent; opens WhatsApp to +91 9694949030.
-- Optional HTTPS CRM endpoint support; static preview stores no lead data.
-- Accessibility: reduced-motion, keyboard focus, semantic headings, lazy image loading.
+## Implemented and deployed in staging
 
-## Important: outstanding assets (NOT complete)
-1. Accurate 360° machine models: **none available yet**. A Three.js display plinth is provided but the machine remains an original flat photograph. Do NOT market this as 360° machine scanning.
-2. Power Reaper working/harvesting footage: **no original approved MP4 supplied**. The hero is an animated visual concept.
-3. Shark Tank original footage: **not supplied**. The story section is a text documentary placeholder; no YouTube embeds or third-party clips are used.
-4. Field operation clips for other categories: **not supplied**. Fallback photos are clearly labelled.
-5. Original front angles for some categories: not yet available; marked.
-6. Amazon Bestseller/Awards and farmer-connect counters: not displayed as factual metrics until primary evidence is supplied.
-7. CRM webhook: not connected; WhatsApp flow works, customer presses Send.
-8. A real manufacturing/farmer testimonial library: not supplied.
+- Premium forest-green, near-black, cream/white and metallic-gold responsive design.
+- RBD company logo from the supplied catalogue cover. Original machine photos are not redesigned.
+- Full primary navigation: Home, Products, Our Journey, About RBD, Dealers, Support, Contact.
+- Search modal (Ctrl/⌘+K), product/model/application search and a 14-category mega menu.
+- Fourteen static product routes, model choosers, specifications labelled by reference model, galleries, applications, CTA, and downloadable original PDF.
+- Product comparison page for up to three categories with reference-source caveats.
+- Photo zoom with original branding; verified GLB-ready Three.js and OrbitControls path. **No fake 360° models.**
+- Cinematic scroll and field concepts; no claim that the animated field is real operation footage.
+- Eight differentiated application themes and RBD-authorised video slots.
+- Interactive six-chapter RBD founder / Shark Tank documentary timeline.
+- Honest muted autoplay video player, playback controls and reduced-motion support.
+- Structured mobile layouts and mobile menu, route sitemap, robots and per-product metadata.
+- Enquiry form: customer name, 10-digit Indian mobile, state, city, product, interested model, message, type, and explicit consent.
+- Enquiry types: callback, dealer, FPO/bulk and general; working WhatsApp deep link to +91 9694949030, with no fake "sent" message.
+- Secure Node/Express API on Render: `https://rbd-field-cinema-api.onrender.com`, rate limits, input validation, CORS and parameterised PostgreSQL queries.
+- Build checks: `npm run build` performs official product photo source checks, static export, and tests for 22 routes, 14 product pages, sitemap and robots.
 
-## Media hosting: Cloudinary or authorised CDN
-Set at Render build time:
-- NEXT_PUBLIC_MEDIA_BASE_URL=https://res.cloudinary.com/<cloud_name>/video/upload/<your_folder>
-- NEXT_PUBLIC_ENQUIRY_ENDPOINT=https://<authorised_secure_backend>/api/enquiries (optional)
+## Database: requires approval before callback submission works
 
-Published filenames expected:
-- hero-reaper.mp4
-- rbd-brand-film.mp4
-- shark-tank-owned-footage.mp4
-- power-reaper.mp4
-- power-weeder.mp4
-- ...<product-slug>.mp4
+A free PostgreSQL instance named `rbd-field-cinema-leads` exists in Singapore.
 
-Video should be H.264 MP4 with faststart, an appropriate mobile bitrate and poster fallback.
-Example:
-ffmpeg -i source.mp4 -c:v libx264 -preset medium -crf 23 -pix_fmt yuv420p -movflags +faststart -c:a aac -b:a 128k product.mp4
+The backend currently responds with HTTP 503 to form submissions until private `DATABASE_URL` is connected. This is deliberate — no success is reported without confirmed storage.
 
-Cloudinary account, upload credentials, presets and user-owned assets are required to publish actual files.
+The Render Blueprint proposal connects the existing API to the existing database using a private Render resource reference (no credential in the public GitHub repository).
 
-## Content rules
-- Real RBD product photos only; no invented 3D geometry or altered machine branding.
-- Never attribute a reference model's specification to another model.
-- No third-party Shark Tank clips; obtain a documented licence if footage belongs to the broadcaster.
-- Avoid advertising unverifiable sales figures or regulatory claims.
+**Blueprint dashboard:** https://dashboard.render.com/blueprint/exs-dc0l86uc6qcc73en5op0/sync/exe-dc0l876c6qcc73en5plg
 
-## Deployment
-- Production build: npm install && npm run build
-- Next.js: output='export' produces /out
-- Render static-site publish directory: out
-- GitHub: rbdchatgpt-cmd/rbd-animated-catalogue
-- Preview: https://rbd-field-cinema-next.onrender.com
-- Old catalogue remains: https://rbd-animated-catalogue.onrender.com
+The proposal is **planned, not applied**. Render explicitly requires user approval to change infrastructure. After approval, deploy the API, confirm `/health` reports `databaseConnected: true`, then submit and read back a test enquiry in the private database.
 
-## Before replacing the main domain
-- Upload and QA original media; correct 3D models.
-- Audit dependency vulnerabilities and upgrade as needed.
-- Test all interactive functions on iOS Safari, Android Chrome, desktop Chrome and Firefox.
-- Configure an authorised backend CRM with spam protection and rate limiting; validate consent/privacy policy.
-- Confirm original image files are served from an owned and cacheable asset host.
-- Validate current model specs, support locations, certifications and awards with RBD.
+**WARNING:** The free PostgreSQL database is scheduled to expire on **21 December 2026**. Upgrade to a persistent supported plan and adopt a retention, backup and privacy policy before collecting customer leads at scale. No paid upgrade has been performed.
+
+## Original video and 3D assets
+
+Media registry: `lib/media.js`. Assets currently intentionally `null` until approved RBD files are supplied.
+
+Expected content:
+- Cinematic golden-wheat / actual Power Reaper harvest film: `hero.video`.
+- Brand film: `brandFilm.video`.
+- Six documentary clips: intro, founders, workshop, pitch, investors and growth.
+- Product-level working MP4, approved GLB/GLTF model, multi-angle photos for each category.
+- Approved photos of the founders, team, company factory and customer stories.
+
+**No stock or third-party Shark Tank videos** have been used. The static fallback is visually labelled. The authentic GLB machine is never fabricated from a different model.
+
+To publish via Cloudinary or an authorised CDN:
+1. Upload owned assets to the CDN.
+2. Set `NEXT_PUBLIC_MEDIA_BASE_URL` on the Render static site.
+3. Enter the **approved relative filenames** in `lib/media.js`.
+4. Redeploy and verify video poster, load, mobile playback and 3D interaction.
+
+Only approved original product imagery should be used. The build-time official photo sync attempts to load images from RBD product pages; if no verifiable source can be extracted, a clear placeholder remains.
+
+## Remaining production checklist
+
+- Approve private database link; test and monitor genuine callback storage.
+- Consider upgrading the free DB before 21 December 2026.
+- Upload original approved RBD Shark Tank and field MP4s, with mobile H.264/fallback files.
+- Upload correct CAD/GLB/photogrammetry meshes and verified component maps.
+- Add remaining validated original product images; verify all specifications by model.
+- Supply consented farmer testimonials and authenticated awards for publication.
+- Configure production privacy notice, data retention and backups.
+- Run an external visual/browser QA pass on iOS Safari, Android Chrome, Firefox and desktop Chrome. The static route build test is **not** equivalent to device/browser testing.
+- Run `npm audit` and resolve dependency warnings before final production cutover.
+- Do not replace the official `www.rbdmachine.com` domain until RBD has approved content, lead storage and QA.
+
+## Source and deployment references
+
+GitHub: https://github.com/rbdchatgpt-cmd/rbd-animated-catalogue  
+Frontend Render: https://dashboard.render.com/static/srv-dc0l19mk1f9s739g4bb0  
+API Render: https://dashboard.render.com/web/srv-dc0l6c17lnhs7390pf90  
+Database Render: https://dashboard.render.com/d/dpg-dc0l55h42hec73bop8s0-a
+
